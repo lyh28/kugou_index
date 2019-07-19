@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
+import 'Bean/PushLineBean.dart';
+import 'Bean/PersonBean.dart';
 import 'Requset/KuGouRequest.dart';
+
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
@@ -36,41 +37,28 @@ class MainPage extends StatefulWidget {
 }
 
 class MainPageState extends State<MainPage> {
-
-//String url="https://www.baidu.com";
-  void askQuest() async{
-    try{
-      HttpClient httpClient=new HttpClient();
-      HttpClientRequest request=await httpClient.getUrl((Uri.parse(KuGouRequest.BUTTON_URL)));
-//      request.headers.add("user-agent", "Android800-Phone-201-0-FANet-cmnet(13)");
-//      request.headers.add("Accept-", value)
-      HttpClientResponse response=await request.close();
-      var text=await response.transform(utf8.decoder).join();
-      Map data=json.decode(text);
-      var str1=data["data"];
-      String modulename=str1[1]["moduleName"];
-      String bgImg=str1[1]["bgImg"];
-      String subTitle=str1[1]["subTitle"];
-      print("text: \n"+text);
-      print("module: "+modulename);
-      print("bgImg: "+bgImg);
-      print("subTitle:  "+subTitle);
-    }catch(e){
-      print("请求失败");
-    }
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    update();
+  }
+  void update(){
+    Beans.initPerson();
+    Beans.initPushLine();
   }
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return Scaffold(
-      floatingActionButton: FloatingActionButton(onPressed: askQuest),
+        floatingActionButton: FloatingActionButton(onPressed: update),
         body: Column(mainAxisSize: MainAxisSize.max, children: <Widget>[
-      TitlePage(),
-      Expanded(
-        child: ChooseType(),
-      ),
-      BottomView()
-    ]));
+          TitlePage(),
+          Expanded(
+            child: ChooseType(),
+          ),
+          BottomView()
+        ]));
   }
 }
 
@@ -279,27 +267,19 @@ class PushFours extends StatelessWidget {
         crossAxisSpacing: 10,
         mainAxisSpacing: 5,
         children: <Widget>[
-          PushIndex(),
-          PushIndex(),
-          PushIndex(),
-          PushIndex(),
+          PushIndex(Beans.personBeanList[0]),
+          PushIndex(Beans.personBeanList[1]),
+          PushIndex(Beans.personBeanList[2]),
+          PushIndex(Beans.personBeanList[3]),
         ]);
   }
 }
 
 class PushIndex extends StatelessWidget {
-  PushIndex(
-      {Key key,
-      this.name: "名字",
-      this.title: "标题",
-      this.pic,
-      this.ps: "左上角",
-      this.isexpand: true})
+  PushIndex(@required this.personBean,
+      {Key key, this.isexpand: true})
       : super(key: key);
-  String name;
-  String title;
-  String pic;
-  String ps; //左上角
+  PersonBean personBean;
   //是否扩展图片
   bool isexpand;
 
@@ -325,24 +305,27 @@ class PushIndex extends StatelessWidget {
           child: Center(
               child: Stack(
             fit: getStackFit(),
-            alignment: Alignment.centerRight,
+            alignment: Alignment.centerLeft,
             children: <Widget>[
-              Text(ps),
               Image(
                 image: AssetImage("images/person1.png"),
                 fit: BoxFit.fitWidth,
+              ),
+              Container(
+                decoration: BoxDecoration(color: personBean.tag==null?null:personBean.tag.color),
+                child: Text(personBean.tag==null?"":personBean.tag.tagName,style: TextStyle(color: Colors.white)),
               )
             ],
           )),
         ),
         Container(
             padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
-            child: Text(title,
+            child: Text(personBean.label,
                 style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800))),
         Container(
             padding: EdgeInsets.only(left: 5),
             alignment: Alignment.centerLeft,
-            child: Text(name, style: TextStyle(fontSize: 10))),
+            child: Text(personBean.nickName, style: TextStyle(fontSize: 10))),
       ],
     );
   }
@@ -369,19 +352,19 @@ class OfficialPushs extends StatelessWidget {
             children: <Widget>[
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(isexpand: false)),
+                  child: PushIndex(Beans.personBeanList[5],isexpand: false)),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(isexpand: false)),
+                  child: PushIndex(Beans.personBeanList[6],isexpand: false)),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(isexpand: false)),
+                  child: PushIndex(Beans.personBeanList[7],isexpand: false)),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(isexpand: false)),
+                  child: PushIndex(Beans.personBeanList[8],isexpand: false)),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                child: PushIndex(isexpand: false),
+                child: PushIndex(Beans.personBeanList[9],isexpand: false),
               ),
             ],
           ),
@@ -486,5 +469,23 @@ class BottomView extends StatelessWidget {
         ],
       ),
     );
+  }
+}
+
+//存储类对象
+class Beans {
+  static List<PersonBean> personBeanList;
+  static List<PushLineBean> pushLineList;
+  static int personIndex = 0;
+  static int pushIndex = 0;
+
+  static void initPushLine() async {
+    Map map = await KuGouRequest.getJsonData(KuGouRequest.PUSH_URL);
+    pushLineList = PushLineBean.getListFromJSON(map);
+  }
+
+  static void initPerson() async {
+    Map map = await KuGouRequest.getJsonData(KuGouRequest.PERSON_URL);
+    personBeanList = PersonBean.getListFromJSON(map);
   }
 }
