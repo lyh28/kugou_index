@@ -5,6 +5,7 @@ import 'Bean/ButtonBean.dart';
 import 'Bean/OfficialBean.dart';
 import 'Requset/KuGouRequest.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 
 //推荐页
 class TabPagePush extends StatefulWidget {
@@ -18,63 +19,68 @@ class TabPagePush extends StatefulWidget {
 }
 
 class TabPagePushState extends State<TabPagePush> {
-  void update() {
-    Beans.initPerson();
-    Beans.initPushLine();
-    Beans.initButton();
-    Beans.initOfficial();
+  List<Widget> baseWidgetLilst = List();
+
+  void init() {
+    Beans.initPersonB();
+    Beans.initPushLineB();
+    Beans.initButtonB();
+    Beans.initOfficialB();
+    Beans.personindex = 4;
   }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    print("初始化");
-    update();
+    init();
+  }
+
+  Future<void> onRefresh() async {
+    print("刷新");
+    setState(() {
+      PushMore.moreList.clear();
+      init();
+    });
+  }
+
+  Future<void> loadMore() async {
+    print("加载更多");
+    setState(() {
+      Beans.loadMore();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    baseWidgetLilst.clear();
+    baseWidgetLilst.add(Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+            child: createIcon(Beans.buttonList[0].bgImg,
+                Beans.buttonList[0].moduleName, Beans.buttonList[0].subTitle)),
+        Expanded(
+            child: createIcon(Beans.buttonList[1].bgImg,
+                Beans.buttonList[1].moduleName, Beans.buttonList[1].subTitle)),
+        Expanded(
+            child: createIcon(Beans.buttonList[2].bgImg,
+                Beans.buttonList[2].moduleName, Beans.buttonList[2].subTitle))
+      ],
+    ));
+    baseWidgetLilst.add(PushFours());
+    baseWidgetLilst.add(OfficialPushs());
+    baseWidgetLilst.add(PushLine());
+    baseWidgetLilst.add(PushMore());
     // TODO: implement build
-    return SingleChildScrollView(
-      scrollDirection: Axis.vertical,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                  child: createIcon(
-                      Beans.buttonList[0].bgImg,
-                      Beans.buttonList[0].moduleName,
-                      Beans.buttonList[0].subTitle)),
-              Expanded(
-                  child: createIcon(
-                      Beans.buttonList[1].bgImg,
-                      Beans.buttonList[1].moduleName,
-                      Beans.buttonList[1].subTitle)),
-              Expanded(
-                  child: createIcon(
-                      Beans.buttonList[2].bgImg,
-                      Beans.buttonList[2].moduleName,
-                      Beans.buttonList[2].subTitle))
-            ],
-          ),
-          //四格推荐
-          PushFours(),
-          //官方推荐
-          OfficialPushs(),
-          //推送条
-          PushLine(),
-          //更多推荐
-          PushFours(),
-          PushFours(),
-        ],
-      ),
-    );
+    return EasyRefresh(
+        onRefresh: onRefresh,
+        loadMore: loadMore,
+        autoLoad: false,
+        child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(children: baseWidgetLilst)));
   }
 
   //生成三个小按钮
@@ -86,7 +92,7 @@ class TabPagePushState extends State<TabPagePush> {
         Padding(
           padding: EdgeInsets.only(right: 10),
           child: FadeInImage.assetNetwork(
-            placeholder: "images/icon1.png",
+            placeholder: "images/default.jpg",
             image: icon,
             width: 35,
             height: 35,
@@ -111,9 +117,6 @@ class PushFours extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    if(Beans.personindex+4>=Beans.personBeanList.length)
-      return null;
-    Beans.personindex+=4;
     return GridView.count(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -123,11 +126,54 @@ class PushFours extends StatelessWidget {
         crossAxisSpacing: 10,
         mainAxisSpacing: 5,
         children: <Widget>[
-          PushIndex(Beans.personBeanList[Beans.personindex-4]),
-          PushIndex(Beans.personBeanList[Beans.personindex-3]),
-          PushIndex(Beans.personBeanList[Beans.personindex-2]),
-          PushIndex(Beans.personBeanList[Beans.personindex-1]),
+          PushIndex(Beans.personBeanList[0]),
+          PushIndex(Beans.personBeanList[1]),
+          PushIndex(Beans.personBeanList[2]),
+          PushIndex(Beans.personBeanList[3]),
         ]);
+  }
+}
+
+//一列两个  格式
+class PushMore extends StatelessWidget {
+  static List<Widget> moreList = List();
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    //每次两个地添加
+//    moreList.add(Text("data"));
+//    moreList.add(Text("data"));
+//    moreList.add(Text("data"));
+//    moreList.add(Text("data"));
+//    moreList.add(Text("data"));
+//    moreList.add(Text("data"));
+
+//    moreList.add(PushFours());
+//    moreList.add(PushFours());
+    while ((Beans.personindex + 2) <= Beans.personBeanList.length) {
+//      //可以添加
+//      print("进入   "+Beans.personBeanList[Beans.personindex].toString());
+//      print("进入   "+Beans.personBeanList[Beans.personindex+1].toString());
+      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex]));
+      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex + 1]));
+      Beans.personindex += 2;
+    }
+    Beans.personindex -= 2;
+
+    return Padding(padding: EdgeInsets.all(10),child: GridView.builder(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,
+          childAspectRatio: 0.88,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 5,),
+        scrollDirection: Axis.vertical,
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        itemCount: moreList.length,
+        itemBuilder: (context,index){
+          return moreList[index];
+        }),);
+//  return Column(children: moreList);
   }
 }
 
@@ -137,7 +183,6 @@ class PushIndex extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     // TODO: implement build
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -150,7 +195,7 @@ class PushIndex extends StatelessWidget {
           alignment: Alignment.topLeft,
           children: <Widget>[
             FadeInImage.assetNetwork(
-              placeholder: "images/default.png",
+              placeholder: "images/default.jpg",
               image: personBean.image,
               width: 250,
               height: 250,
@@ -230,11 +275,9 @@ class OffcialPush extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if(officialBean==null){
-      print("为空");
+    if (officialBean == null) {
       return null;
     }
-    print(officialBean.subTitle+"  "+officialBean.tagColor.toString());
     // TODO: implement build
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -243,7 +286,7 @@ class OffcialPush extends StatelessWidget {
       children: <Widget>[
         Expanded(
             child: FadeInImage.assetNetwork(
-          placeholder: "images/default.png",
+          placeholder: "images/default.jpg",
           image: officialBean.coverPath,
           width: 150,
           height: 150,
@@ -257,12 +300,14 @@ class OffcialPush extends StatelessWidget {
             child: Row(
               children: <Widget>[
                 Container(
-                  child: Center(child: Text(officialBean.tagName,
-                      style: TextStyle(fontSize: 9)),),
+                  child: Center(
+                    child: Text(officialBean.tagName,
+                        style: TextStyle(fontSize: 9)),
+                  ),
                   decoration: BoxDecoration(color: officialBean.tagColor),
                   padding: EdgeInsets.symmetric(horizontal: 2),
                 ),
-                Text(officialBean.subTitle, style: TextStyle(fontSize: 10 ))
+                Text(officialBean.subTitle, style: TextStyle(fontSize: 10))
               ],
             ))
       ],
@@ -295,8 +340,7 @@ class PushLineState extends State<PushLine> {
     setState(() {
       _timer = Timer(Duration(seconds: 2), callback);
       index++;
-      if(index>=Beans.pushLineList.length)
-        index=0;
+      if (index >= Beans.pushLineList.length) index = 0;
     });
   }
 
@@ -310,9 +354,10 @@ class PushLineState extends State<PushLine> {
           color: Color.fromARGB(160, 240, 240, 240),
           borderRadius: BorderRadius.circular(6)),
       child: Row(
+        mainAxisSize: MainAxisSize.max,
         children: <Widget>[
           FadeInImage.assetNetwork(
-            placeholder: "images/icon1.png",
+            placeholder: "images/default.jpg",
             image: Beans.pushLineList[index].image,
             width: 35,
             height: 35,
@@ -321,12 +366,9 @@ class PushLineState extends State<PushLine> {
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5),
             child: Text(Beans.pushLineList[index].subTitle,
-                style: TextStyle(fontWeight: FontWeight.bold)),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
-          Text(
-            Beans.pushLineList[index].title,
-            maxLines: 1,
-          )
+          Text(Beans.pushLineList[index].title, style: TextStyle(fontSize: 10))
         ],
       ),
     );
@@ -387,34 +429,54 @@ class Beans {
   static List<PushLineBean> pushLineList;
   static List<ButtonBean> buttonList;
   static List<OfficialBean> officialList;
-  static int personindex=0;
-  static void initPushLine() async {
-    if (pushLineList != null) return;
+
+  //缓存池作用
+  static List<PersonBean> personBeanListB;
+  static List<PushLineBean> pushLineListB;
+  static List<ButtonBean> buttonListB;
+  static List<OfficialBean> officialListB;
+  static int personindex = 0;
+
+  static void clearAll() {
+    personindex = 0;
+    personBeanList = null;
+    pushLineList = null;
+    buttonList = null;
+    officialList = null;
+    personBeanListB = null;
+    pushLineListB = null;
+    buttonListB = null;
+    officialListB = null;
+  }
+
+  //缓存池转移  添加新的至缓存池
+  static void initPushLineB() async {
+    pushLineList = pushLineListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PUSH_URL);
-    pushLineList = PushLineBean.getListFromJSON(map);
+    pushLineListB = PushLineBean.getListFromJSON(map);
   }
 
-  static void initPerson() async {
-    if (personBeanList != null) return;
+  static void initPersonB() async {
+    personBeanList = personBeanListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PERSON_URL);
-    personBeanList = PersonBean.getListFromJSON(map);
+    personBeanListB = PersonBean.getListFromJSON(map);
   }
 
-  static void initButton() async {
-    if (buttonList != null) return;
+  static void initButtonB() async {
+    buttonList = buttonListB;
+
     Map map = await KuGouRequest.getJsonData(KuGouRequest.BUTTON_URL);
-    buttonList = ButtonBean.getListFromJSON(map);
+    buttonListB = ButtonBean.getListFromJSON(map);
   }
 
-  static void initOfficial() async {
-    if (officialList != null) return;
+  static void initOfficialB() async {
+    officialList = officialListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.OFFICIAL_URL);
-    officialList = OfficialBean.getListFromJSON(map);
+    officialListB = OfficialBean.getListFromJSON(map);
+  }
+
+  static void loadMore() async {
+    Map map = await KuGouRequest.getJsonData(KuGouRequest.PERSON_URL);
+    personBeanList.addAll(PersonBean.getListFromJSON(map));
   }
 }
-/*
-[data][i][]
-bgImg
-moduleName
-subTitle
- */

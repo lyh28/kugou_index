@@ -15,15 +15,13 @@ class ButtonBean {
     if (map == null)
       return list;
     List data = map["data"];
-    print('data: $data');
     int len = data.length;
-    print('len  $len');
     for (int i = 0; i < len; i++) {
       //读取左上角标签
       ButtonBean buttonBean = ButtonBean(
           data[i]["bgImg"],data[i]["moduleName"],data[i]["subTitle"]);
       list.add(buttonBean);
-      print('personBean $i  :$buttonBean');
+      //print('personBean $i  :$buttonBean');
     }
     return list;
   }

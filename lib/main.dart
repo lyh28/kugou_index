@@ -41,10 +41,10 @@ class MainPageState extends State<MainPage> {
     update();
   }
   void update() {
-    Beans.initPerson();
-    Beans.initPushLine();
-    Beans.initButton();
-    Beans.initOfficial();
+    Beans.initPersonB();
+    Beans.initPushLineB();
+    Beans.initButtonB();
+    Beans.initOfficialB();
   }
   @override
   Widget build(BuildContext context) {
@@ -162,20 +162,23 @@ class _ChooseTypeState extends State<ChooseType>
   Widget build(BuildContext context) {
     // TODO: implement build
     return Column(children: <Widget>[
-      TabBar(
-          indicatorPadding: EdgeInsets.only(bottom: 7),
-          controller: _tabController,
-          isScrollable: false,
-          labelStyle: TextStyle(fontSize: 12.0),
-          unselectedLabelStyle: TextStyle(fontSize: 11.0),
-          indicatorSize: TabBarIndicatorSize.label,
-          indicatorColor: Colors.greenAccent,
-          labelColor: Colors.black,
-          tabs: tablist
-              .map((e) => Tab(
-                    text: e,
-                  ))
-              .toList()),
+      Container(
+        height: 40,
+        child: TabBar(
+            labelPadding: EdgeInsets.all(10),
+            indicatorPadding: EdgeInsets.only(bottom: 7),
+            controller: _tabController,
+            isScrollable: false,
+            labelStyle: TextStyle(fontSize: 14.0),
+            unselectedLabelStyle: TextStyle(fontSize: 11.0),
+            indicatorSize: TabBarIndicatorSize.label,
+            indicatorColor: Colors.greenAccent,
+            labelColor: Colors.black,
+            tabs: tablist
+                .map((e) => Text(e,
+            ))
+                .toList()),
+      ),
       Container(height: 0.1, color: Colors.grey, child: Row()),
       Expanded(
           child: TabBarView(

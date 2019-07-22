@@ -25,7 +25,7 @@ class OfficialBean {
     for(int i=0;i<len;i++){
       OfficialBean officialBean=OfficialBean(data[i]["coverPath"], data[i]["subTitle"], Util.getRGBColorFromStr(data[i]["tagColor"]), data[i]["tagName"], data[i]["title"]);
       list.add(officialBean);
-      print('officialBean $i  :$officialBean');
+      //print('officialBean $i  :$officialBean');
     }
     return list;
   }

@@ -20,7 +20,7 @@ class PushLineBean{
       PushLineBean pushLineBean = PushLineBean(
           data[i]["image"], data[i]["subTitle"], data[i]["title"]);
       list.add(pushLineBean);
-      print("PushLine  " + i.toString() + "  :" + pushLineBean.toString());
+     // print("PushLine  " + i.toString() + "  :" + pushLineBean.toString());
     }
     return list;
   }

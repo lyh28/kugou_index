@@ -25,9 +25,7 @@ class PersonBean {
     if (map == null)
       return list;
     List data = map["data"]["list"];
-    print('data: $data');
     int len = data.length;
-    print('len  $len');
     for (int i = 0; i < len; i++) {
       String title;
       String name="";
