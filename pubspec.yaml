@@ -48,7 +48,7 @@ flutter:
   - images/icon1.png
   - images/icon2.png
   - images/icon3.png
-  - images/person1.png
+  - images/default.jpg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.io/assets-and-images/#resolution-aware.
 

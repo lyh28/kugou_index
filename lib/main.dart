@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'TagPagePush.dart';
-import 'Requset/KuGouRequest.dart';
-import 'dart:async';
 
 void main() => runApp(MyApp());
 
@@ -46,6 +44,7 @@ class MainPageState extends State<MainPage> {
     Beans.initPerson();
     Beans.initPushLine();
     Beans.initButton();
+    Beans.initOfficial();
   }
   @override
   Widget build(BuildContext context) {

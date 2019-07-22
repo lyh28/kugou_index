@@ -58,7 +58,7 @@ class Tag{
   Color color;
   String tagName;
   Tag(String colorstr,this.tagName){
-    this.color=Util.getColorFromStr(colorstr);
+    this.color=Util.getARGBColorFromStr(colorstr);
   }
 
   @override

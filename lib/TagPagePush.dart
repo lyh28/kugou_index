@@ -2,6 +2,7 @@ import 'dart:async';
 import 'Bean/PushLineBean.dart';
 import 'Bean/PersonBean.dart';
 import 'Bean/ButtonBean.dart';
+import 'Bean/OfficialBean.dart';
 import 'Requset/KuGouRequest.dart';
 import 'package:flutter/material.dart';
 
@@ -21,6 +22,7 @@ class TabPagePushState extends State<TabPagePush> {
     Beans.initPerson();
     Beans.initPushLine();
     Beans.initButton();
+    Beans.initOfficial();
   }
 
   @override
@@ -44,9 +46,21 @@ class TabPagePushState extends State<TabPagePush> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Expanded(child: createIcon(Beans.buttonList[0].bgImg, Beans.buttonList[0].moduleName,Beans.buttonList[0].subTitle)),
-              Expanded(child: createIcon(Beans.buttonList[1].bgImg, Beans.buttonList[1].moduleName,Beans.buttonList[1].subTitle)),
-              Expanded(child: createIcon(Beans.buttonList[2].bgImg, Beans.buttonList[2].moduleName,Beans.buttonList[2].subTitle))
+              Expanded(
+                  child: createIcon(
+                      Beans.buttonList[0].bgImg,
+                      Beans.buttonList[0].moduleName,
+                      Beans.buttonList[0].subTitle)),
+              Expanded(
+                  child: createIcon(
+                      Beans.buttonList[1].bgImg,
+                      Beans.buttonList[1].moduleName,
+                      Beans.buttonList[1].subTitle)),
+              Expanded(
+                  child: createIcon(
+                      Beans.buttonList[2].bgImg,
+                      Beans.buttonList[2].moduleName,
+                      Beans.buttonList[2].subTitle))
             ],
           ),
           //四格推荐
@@ -71,7 +85,13 @@ class TabPagePushState extends State<TabPagePush> {
           child: Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
         Padding(
           padding: EdgeInsets.only(right: 10),
-          child: FadeInImage.assetNetwork(placeholder: "images/icon1.png", image: icon,width: 35,height: 35,fit: BoxFit.fill,),
+          child: FadeInImage.assetNetwork(
+            placeholder: "images/icon1.png",
+            image: icon,
+            width: 35,
+            height: 35,
+            fit: BoxFit.fill,
+          ),
         ),
         Column(
           mainAxisSize: MainAxisSize.min,
@@ -91,6 +111,9 @@ class PushFours extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
+    if(Beans.personindex+4>=Beans.personBeanList.length)
+      return null;
+    Beans.personindex+=4;
     return GridView.count(
         shrinkWrap: true,
         physics: NeverScrollableScrollPhysics(),
@@ -100,34 +123,21 @@ class PushFours extends StatelessWidget {
         crossAxisSpacing: 10,
         mainAxisSpacing: 5,
         children: <Widget>[
-          PushIndex(Beans.personBeanList[0]),
-          PushIndex(Beans.personBeanList[1]),
-          PushIndex(Beans.personBeanList[2]),
-          PushIndex(Beans.personBeanList[3]),
+          PushIndex(Beans.personBeanList[Beans.personindex-4]),
+          PushIndex(Beans.personBeanList[Beans.personindex-3]),
+          PushIndex(Beans.personBeanList[Beans.personindex-2]),
+          PushIndex(Beans.personBeanList[Beans.personindex-1]),
         ]);
   }
 }
 
 class PushIndex extends StatelessWidget {
-  PushIndex(@required this.personBean, {Key key, this.isexpand: true})
-      : super(key: key);
+  PushIndex(@required this.personBean, {Key key}) : super(key: key);
   PersonBean personBean;
-
-  //是否扩展图片
-  bool isexpand;
-
-  StackFit getStackFit() {
-    if (isexpand) {
-      print("扩展");
-      return StackFit.expand;
-    } else
-      print("不扩展");
-
-    return StackFit.loose;
-  }
 
   @override
   Widget build(BuildContext context) {
+
     // TODO: implement build
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -136,11 +146,11 @@ class PushIndex extends StatelessWidget {
       children: <Widget>[
         Expanded(
             child: Stack(
-          fit: StackFit.passthrough,
+          fit: StackFit.loose,
           alignment: Alignment.topLeft,
           children: <Widget>[
             FadeInImage.assetNetwork(
-              placeholder: "images/person1.png",
+              placeholder: "images/default.png",
               image: personBean.image,
               width: 250,
               height: 250,
@@ -193,23 +203,68 @@ class OfficialPushs extends StatelessWidget {
             children: <Widget>[
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(Beans.personBeanList[5], isexpand: false)),
+                  child: OffcialPush(Beans.officialList[0])),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(Beans.personBeanList[6], isexpand: false)),
+                  child: OffcialPush(Beans.officialList[1])),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(Beans.personBeanList[7], isexpand: false)),
+                  child: OffcialPush(Beans.officialList[2])),
               Padding(
                   padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                  child: PushIndex(Beans.personBeanList[8], isexpand: false)),
+                  child: OffcialPush(Beans.officialList[3])),
               Padding(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                child: PushIndex(Beans.personBeanList[9], isexpand: false),
-              ),
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                  child: OffcialPush(Beans.officialList[4]))
             ],
           ),
         )
+      ],
+    );
+  }
+}
+
+class OffcialPush extends StatelessWidget {
+  OffcialPush(@required this.officialBean, {Key key}) : super(key: key);
+  OfficialBean officialBean;
+
+  @override
+  Widget build(BuildContext context) {
+    if(officialBean==null){
+      print("为空");
+      return null;
+    }
+    print(officialBean.subTitle+"  "+officialBean.tagColor.toString());
+    // TODO: implement build
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+            child: FadeInImage.assetNetwork(
+          placeholder: "images/default.png",
+          image: officialBean.coverPath,
+          width: 150,
+          height: 150,
+        )),
+        Padding(
+            padding: EdgeInsets.symmetric(vertical: 2, horizontal: 5),
+            child: Text(officialBean.title,
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w800))),
+        Padding(
+            padding: EdgeInsets.only(left: 5),
+            child: Row(
+              children: <Widget>[
+                Container(
+                  child: Center(child: Text(officialBean.tagName,
+                      style: TextStyle(fontSize: 9)),),
+                  decoration: BoxDecoration(color: officialBean.tagColor),
+                  padding: EdgeInsets.symmetric(horizontal: 2),
+                ),
+                Text(officialBean.subTitle, style: TextStyle(fontSize: 10 ))
+              ],
+            ))
       ],
     );
   }
@@ -226,15 +281,24 @@ class PushLine extends StatefulWidget {
 
 class PushLineState extends State<PushLine> {
   Timer _timer;
-  int index;
+  int index = 0;
+
   //callback
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    index=0;
+    _timer = Timer(Duration(seconds: 2), callback);
   }
-  void callback() {}
+
+  void callback() {
+    setState(() {
+      _timer = Timer(Duration(seconds: 2), callback);
+      index++;
+      if(index>=Beans.pushLineList.length)
+        index=0;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +323,10 @@ class PushLineState extends State<PushLine> {
             child: Text(Beans.pushLineList[index].subTitle,
                 style: TextStyle(fontWeight: FontWeight.bold)),
           ),
-          Text(Beans.pushLineList[index].title,maxLines: 1,)
+          Text(
+            Beans.pushLineList[index].title,
+            maxLines: 1,
+          )
         ],
       ),
     );
@@ -319,7 +386,8 @@ class Beans {
   static List<PersonBean> personBeanList;
   static List<PushLineBean> pushLineList;
   static List<ButtonBean> buttonList;
-
+  static List<OfficialBean> officialList;
+  static int personindex=0;
   static void initPushLine() async {
     if (pushLineList != null) return;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PUSH_URL);
@@ -336,6 +404,12 @@ class Beans {
     if (buttonList != null) return;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.BUTTON_URL);
     buttonList = ButtonBean.getListFromJSON(map);
+  }
+
+  static void initOfficial() async {
+    if (officialList != null) return;
+    Map map = await KuGouRequest.getJsonData(KuGouRequest.OFFICIAL_URL);
+    officialList = OfficialBean.getListFromJSON(map);
   }
 }
 /*
