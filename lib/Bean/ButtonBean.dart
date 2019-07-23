@@ -1,4 +1,4 @@
-import 'dart:ui';
+
 class ButtonBean {
   String bgImg;        //图片
   String moduleName;      //标题

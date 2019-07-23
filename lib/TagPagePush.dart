@@ -28,7 +28,6 @@ class TabPagePushState extends State<TabPagePush> {
     Beans.initOfficialB();
     Beans.personindex = 4;
   }
-
   @override
   void initState() {
     // TODO: implement initState
@@ -37,17 +36,18 @@ class TabPagePushState extends State<TabPagePush> {
   }
 
   Future<void> onRefresh() async {
-    print("刷新");
+    PushMore.moreList.clear();
     setState(() {
-      PushMore.moreList.clear();
+      print("开始刷新");
       init();
     });
   }
 
   Future<void> loadMore() async {
     print("加载更多");
-    setState(() {
-      Beans.loadMore();
+    Beans.loadMore().then((e) {
+      setState(() {});
+      print("加载更多完成");
     });
   }
 
@@ -59,13 +59,13 @@ class TabPagePushState extends State<TabPagePush> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Expanded(
-            child: createIcon(Beans.buttonList[0].bgImg,
+            child: ButtonIcon(Beans.buttonList[0].bgImg,
                 Beans.buttonList[0].moduleName, Beans.buttonList[0].subTitle)),
         Expanded(
-            child: createIcon(Beans.buttonList[1].bgImg,
+            child: ButtonIcon(Beans.buttonList[1].bgImg,
                 Beans.buttonList[1].moduleName, Beans.buttonList[1].subTitle)),
         Expanded(
-            child: createIcon(Beans.buttonList[2].bgImg,
+            child: ButtonIcon(Beans.buttonList[2].bgImg,
                 Beans.buttonList[2].moduleName, Beans.buttonList[2].subTitle))
       ],
     ));
@@ -82,9 +82,18 @@ class TabPagePushState extends State<TabPagePush> {
             scrollDirection: Axis.vertical,
             child: Column(children: baseWidgetLilst)));
   }
+}
 
-  //生成三个小按钮
-  Padding createIcon(String icon, String top, String bottom) {
+class ButtonIcon extends StatelessWidget {
+  String icon;
+  String top;
+  String bottom;
+
+  ButtonIcon(this.icon, this.top, this.bottom);
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
     return Padding(
       padding: EdgeInsets.all(10),
       child: Center(
@@ -109,6 +118,7 @@ class TabPagePushState extends State<TabPagePush> {
         )
       ])),
     );
+    ;
   }
 }
 
@@ -131,49 +141,6 @@ class PushFours extends StatelessWidget {
           PushIndex(Beans.personBeanList[2]),
           PushIndex(Beans.personBeanList[3]),
         ]);
-  }
-}
-
-//一列两个  格式
-class PushMore extends StatelessWidget {
-  static List<Widget> moreList = List();
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: implement build
-    //每次两个地添加
-//    moreList.add(Text("data"));
-//    moreList.add(Text("data"));
-//    moreList.add(Text("data"));
-//    moreList.add(Text("data"));
-//    moreList.add(Text("data"));
-//    moreList.add(Text("data"));
-
-//    moreList.add(PushFours());
-//    moreList.add(PushFours());
-    while ((Beans.personindex + 2) <= Beans.personBeanList.length) {
-//      //可以添加
-//      print("进入   "+Beans.personBeanList[Beans.personindex].toString());
-//      print("进入   "+Beans.personBeanList[Beans.personindex+1].toString());
-      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex]));
-      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex + 1]));
-      Beans.personindex += 2;
-    }
-    Beans.personindex -= 2;
-
-    return Padding(padding: EdgeInsets.all(10),child: GridView.builder(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2,
-          childAspectRatio: 0.88,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 5,),
-        scrollDirection: Axis.vertical,
-        physics: NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        itemCount: moreList.length,
-        itemBuilder: (context,index){
-          return moreList[index];
-        }),);
-//  return Column(children: moreList);
   }
 }
 
@@ -375,13 +342,43 @@ class PushLineState extends State<PushLine> {
   }
 }
 
-// 推送条实体类结构
-class PushLineInfo {
-  PushLineInfo(this.title, this.content, this.icon);
+//一行两个  格式
+class PushMore extends StatelessWidget {
+  static List<Widget> moreList = List();
 
-  String icon;
-  String title;
-  String content;
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    print("person len: " +
+        Beans.personBeanList.length.toString() +
+        "  " +
+        Beans.personindex.toString());
+
+    //每次两个地添加
+    while ((Beans.personindex + 2) <= Beans.personBeanList.length) {
+      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex]));
+      moreList.add(PushIndex(Beans.personBeanList[Beans.personindex + 1]));
+      Beans.personindex += 2;
+    }
+    print("morelistlen:  " + moreList.length.toString());
+    return Padding(
+      padding: EdgeInsets.all(10),
+      child: GridView.builder(
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            childAspectRatio: 0.88,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 5,
+          ),
+          scrollDirection: Axis.vertical,
+          physics: NeverScrollableScrollPhysics(),
+          shrinkWrap: true,
+          itemCount: moreList.length,
+          itemBuilder: (context, index) {
+            return moreList[index];
+          }),
+    );
+  }
 }
 
 //底部导航栏
@@ -450,33 +447,35 @@ class Beans {
   }
 
   //缓存池转移  添加新的至缓存池
-  static void initPushLineB() async {
+  static Future initPushLineB() async {
     pushLineList = pushLineListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PUSH_URL);
     pushLineListB = PushLineBean.getListFromJSON(map);
   }
 
-  static void initPersonB() async {
+  static Future initPersonB() async {
     personBeanList = personBeanListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PERSON_URL);
     personBeanListB = PersonBean.getListFromJSON(map);
   }
 
-  static void initButtonB() async {
+  static Future initButtonB() async {
     buttonList = buttonListB;
 
     Map map = await KuGouRequest.getJsonData(KuGouRequest.BUTTON_URL);
     buttonListB = ButtonBean.getListFromJSON(map);
   }
 
-  static void initOfficialB() async {
+  static Future initOfficialB() async {
     officialList = officialListB;
     Map map = await KuGouRequest.getJsonData(KuGouRequest.OFFICIAL_URL);
     officialListB = OfficialBean.getListFromJSON(map);
   }
 
-  static void loadMore() async {
+  static Future loadMore() async {
     Map map = await KuGouRequest.getJsonData(KuGouRequest.PERSON_URL);
+    print("map:  $map");
     personBeanList.addAll(PersonBean.getListFromJSON(map));
+    print("loadmore   person len: " + personBeanList.length.toString());
   }
 }

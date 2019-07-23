@@ -4,7 +4,7 @@ class PersonBean {
   String image;        //图片
   String label;      //标题
   String nickName;   //主播名字
-  final String IMGHEAD="http://p3.fx.kgimg.com";
+  final IMGHEAD="http://p3.fx.kgimg.com";
   //左上角标签
   Tag tag;
   PersonBean(String imagestr,this.label, this.nickName,this.tag){
