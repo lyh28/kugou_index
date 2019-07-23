@@ -341,10 +341,10 @@ class PushLineState extends State<PushLine> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 5),
-            child: Text(Beans.pushLineList[index].subTitle,
+            child: Text(Beans.pushLineList[index].title,
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
           ),
-          Text(Beans.pushLineList[index].title, style: TextStyle(fontSize: 10))
+          Text(Beans.pushLineList[index].subTitle, style: TextStyle(fontSize: 10))
         ],
       ),
     );
