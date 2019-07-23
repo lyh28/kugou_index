@@ -16,6 +16,7 @@ class TabPagePush extends StatefulWidget {
     // TODO: implement createState
     return TabPagePushState();
   }
+
 }
 
 class TabPagePushState extends State<TabPagePush> {
@@ -50,7 +51,13 @@ class TabPagePushState extends State<TabPagePush> {
       print("加载更多完成");
     });
   }
-
+  @override
+  void deactivate() {
+    // TODO: implement deactivate
+    super.deactivate();
+    //清理缓存
+    Beans.clearCache();
+  }
   @override
   Widget build(BuildContext context) {
     baseWidgetLilst.clear();
@@ -304,6 +311,8 @@ class PushLineState extends State<PushLine> {
   }
 
   void callback() {
+    if(!mounted)
+      return ;
     setState(() {
       _timer = Timer(Duration(seconds: 2), callback);
       index++;
@@ -362,7 +371,7 @@ class PushMore extends StatelessWidget {
     }
     print("morelistlen:  " + moreList.length.toString());
     return Padding(
-      padding: EdgeInsets.all(10),
+      padding: EdgeInsets.only(bottom: 10,left: 10,right: 10),
       child: GridView.builder(
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -434,16 +443,12 @@ class Beans {
   static List<OfficialBean> officialListB;
   static int personindex = 0;
 
-  static void clearAll() {
+  static void clearCache() {
     personindex = 0;
     personBeanList = null;
     pushLineList = null;
     buttonList = null;
     officialList = null;
-    personBeanListB = null;
-    pushLineListB = null;
-    buttonListB = null;
-    officialListB = null;
   }
 
   //缓存池转移  添加新的至缓存池
